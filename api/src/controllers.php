@@ -6,15 +6,16 @@ use Silex\Application;
 
 
 
-$app->get('/tareas', function(){
-    $tareas = R::findAll('tareas');
+$app->get('/cotizaciones', function(){
+    $cotizaciones = R::findAll('cotizaciones');
     
     $res = array();
-    foreach ($tareas as $t) {
+    foreach ($cotizaciones as $c) {
         $r = array(
-               'id'=>$t->id,
-               'descripcion'=>$t->descripcion,
-               'estado'=>$t->estado
+               'id'=>$c->id,
+               'moneda'=>$c->moneda,
+               'compra'=>$c->compra,
+               'venta'=>$c->venta
             );
         $res[] = $r;
     }
@@ -22,34 +23,21 @@ $app->get('/tareas', function(){
     return new Response(json_encode($res), 200); 
 });
 
-$app->post('/tareas', function(Request $request){
+$app->post('/cotizaciones', function(Request $request){
     
-    $t = R::dispense('tareas');
-    $t->descripcion = $request->get('descripcion');
-    $t->estado = 'Pendiente';
-    $id = R::store($t);
+    $c = R::dispense('cotizaciones');
+    $c->moneda = $request->get('moneda');
+    $c->compra = $request->get('compra');
+    $c->venta = $request->get('venta');
+    $id = R::store($c);
     $r = array(
-            'id'=>$id,
-            'descripcion'=>$t->descripcion,
-            'estado'=>$t->estado
+            'id'=>$c->id,
+            'moneda'=>$c->moneda,
+            'compra'=>$c->compra,
+            'venta'=>$c->venta
         );
     return new Response(json_encode(array($r)), 201);
     
 });
-
-$app->put('notas/{id}', function($id){
-        
-    //-- En caso de exito retornamos el código HTTP 200 - OK
-    return new Response("Comentario con ID: {$id} actualizado", 200);
-    
-});
-
-$app->delete('tareas/{id}', function($id){
-    $t = R::load('tareas',$id);
-    R::trash($t);
-
-    return new Response("Comentario con ID: {$id} eliminado", 204);
-    
-}); 
 
 return $app;
